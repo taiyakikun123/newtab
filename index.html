@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>新しいタブ</title>
+<link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/104/104095.png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+      font-family: Arial, sans-serif;
+      background: #000000;
+    }
+    #bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 1;
+    }
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      z-index: 2;
+    }
+    .google-search {
+      pointer-events: none;
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 750px;
+      max-width: 90%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      z-index: 10;
+    }
+    .google-search input,
+    .google-search button {
+      pointer-events: auto;
+    }
+    .google-search .logo {
+      font-size: 90px;
+      font-weight: 600;
+      letter-spacing: -5px;
+      margin-bottom: 40px;
+      color: white;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+    .google-search .search-input {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      padding: 12px 24px;
+      border-radius: 36px;
+      background: #ffffff;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.2);
+    }
+    .google-search .search-input input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 18px;
+      background: transparent;
+      color: #333;
+    }
+    .plus-decoration {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+      pointer-events: auto;
+    }
+    .plus-circle {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #e3f2fd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: #000000;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      cursor: pointer;
+    }
+    .customize-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(80, 80, 80, 0.7);
+      border: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      cursor: pointer;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .customize-btn svg {
+      width: 24px;
+      height: 24px;
+      stroke: white;
+      fill: none;
+      stroke-width: 2;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal.active {
+      display: flex;
+    }
+    .modal-content {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    .modal-content h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .modal-content label {
+      display: block;
+      margin: 15px 0 5px;
+      color: #555;
+      font-weight: bold;
+    }
+    .modal-content input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+      margin-bottom: 15px;
+    }
+    .modal-content input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+      margin-bottom: 15px;
+    }
+    .modal-content button {
+      margin-top: 20px;
+      padding: 12px 24px;
+      background: #4285f4;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+    .modal-content button:hover {
+      background: #3367d6;
+    }
+    .modal-content button.cancel {
+      background: #ddd;
+      color: #333;
+    }
+    .modal-content button.cancel:hover {
+      background: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <video id="bg-video" autoplay muted loop></video>
+  <div class="overlay"></div>
+
+  <div class="google-search">
+    <div class="logo">Google</div>
+    <div class="search-input">
+      <input type="text" id="search-box" placeholder="Google検索" autocomplete="off">
+    </div>
+    <div class="plus-decoration">
+      <div class="plus-circle">+</div>
+    </div>
+  </div>
+
+  <button class="customize-btn" id="customize-btn">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 20h9"></path>
+      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+    </svg>
+  </button>
+
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <h2>背景動画の設定</h2>
+      <label for="video-url">動画URL（MP4など）</label>
+      <input type="text" id="video-url" placeholder="https://example.com/video.mp4">
+      <label for="video-file">またはMP4ファイルをアップロード</label>
+      <input type="file" id="video-file" accept="video/mp4,video/*">
+      <div>
+        <button id="save-btn">保存</button>
+        <button class="cancel" id="cancel-btn">キャンセル</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const searchBox = document.getElementById('search-box');
+    const bgVideo = document.getElementById('bg-video');
+    const customizeBtn = document.getElementById('customize-btn');
+    const modal = document.getElementById('modal');
+    const videoUrlInput = document.getElementById('video-url');
+    const videoFileInput = document.getElementById('video-file');
+    const saveBtn = document.getElementById('save-btn');
+    const cancelBtn = document.getElementById('cancel-btn');
+
+    const DB_NAME = 'VideoBackgroundDB';
+    const DB_VERSION = 1;
+    const STORE_NAME = 'videos';
+    let db;
+
+    // IndexedDBの初期化
+    function initDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+          db = request.result;
+          resolve(db);
+        };
+        
+        request.onupgradeneeded = (e) => {
+          const database = e.target.result;
+          if (!database.objectStoreNames.contains(STORE_NAME)) {
+            database.createObjectStore(STORE_NAME);
+          }
+        };
+      });
+    }
+
+    // 動画をIndexedDBに保存
+    function saveVideoToDB(blob) {
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction([STORE_NAME], 'readwrite');
+        const store = transaction.objectStore(STORE_NAME);
+        const request = store.put(blob, 'background-video');
+        
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    // IndexedDBから動画を取得
+    function getVideoFromDB() {
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction([STORE_NAME], 'readonly');
+        const store = transaction.objectStore(STORE_NAME);
+        const request = store.get('background-video');
+        
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    // IndexedDBから動画を削除
+    function deleteVideoFromDB() {
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction([STORE_NAME], 'readwrite');
+        const store = transaction.objectStore(STORE_NAME);
+        const request = store.delete('background-video');
+        
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    // 初期化と動画読み込み
+    initDB().then(async () => {
+      const savedVideoUrl = localStorage.getItem('bgVideoUrl');
+      
+      if (savedVideoUrl && savedVideoUrl.startsWith('http')) {
+        // URLの場合
+        bgVideo.src = savedVideoUrl;
+        bgVideo.volume = 0;
+      } else {
+        // アップロードされた動画の場合
+        const videoBlob = await getVideoFromDB();
+        if (videoBlob) {
+          const url = URL.createObjectURL(videoBlob);
+          bgVideo.src = url;
+          bgVideo.volume = 0;
+        }
+      }
+    });
+
+    // 検索機能
+    searchBox.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        const query = searchBox.value.trim();
+        if (query) {
+          window.location.href = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+        }
+      }
+    });
+
+    // Customizeボタン
+    customizeBtn.addEventListener('click', () => {
+      videoUrlInput.value = localStorage.getItem('bgVideoUrl') || '';
+      videoFileInput.value = '';
+      modal.classList.add('active');
+    });
+
+    // 保存ボタン
+    saveBtn.addEventListener('click', async () => {
+      const file = videoFileInput.files[0];
+      
+      if (file && file.type.startsWith('video/')) {
+        // ファイルアップロードの場合
+        try {
+          await saveVideoToDB(file);
+          const url = URL.createObjectURL(file);
+          bgVideo.src = url;
+          bgVideo.volume = 0;
+          localStorage.setItem('bgVideoUrl', 'uploaded');
+        } catch (error) {
+          console.error('動画の保存に失敗:', error);
+          alert('動画の保存に失敗しました');
+        }
+      } else {
+        // URLの場合
+        const url = videoUrlInput.value.trim();
+        if (url) {
+          localStorage.setItem('bgVideoUrl', url);
+          bgVideo.src = url;
+          bgVideo.volume = 0;
+          await deleteVideoFromDB();
+        } else {
+          // クリア
+          localStorage.removeItem('bgVideoUrl');
+          bgVideo.src = '';
+          await deleteVideoFromDB();
+        }
+      }
+      modal.classList.remove('active');
+    });
+
+    // キャンセルボタン
+    cancelBtn.addEventListener('click', () => {
+      modal.classList.remove('active');
+    });
+
+    // モーダル外クリックで閉じる
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.remove('active');
+      }
+    });
+
+    // 動画の音量を常に0に
+    bgVideo.addEventListener('volumechange', () => {
+      if (bgVideo.volume !== 0) {
+        bgVideo.volume = 0;
+      }
+    });
+  </script>
+</body>
+</html>
