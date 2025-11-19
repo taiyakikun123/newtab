@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>新しいタブ</title>
-<link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/104/104095.png">
+  <title>Search</title>
   <style>
     * {
       margin: 0;
@@ -43,7 +42,7 @@
       top: 40%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 750px;
+      width: 800px;
       max-width: 90%;
       display: flex;
       flex-direction: column;
@@ -101,26 +100,47 @@
     }
     .customize-btn {
       position: fixed;
-      bottom: 30px;
-      right: 30px;
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background: rgba(80, 80, 80, 0.7);
-      border: none;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      cursor: pointer;
+      right: 18px;
+      bottom: 18px;
       z-index: 100;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
       display: flex;
       align-items: center;
       justify-content: center;
+      cursor: pointer;
+      transition: transform .12s;
+    }
+    .customize-btn:hover {
+      transform: scale(1.06);
+      background: rgba(255,255,255,0.09);
+    }
+    .customize-btn .label {
+      position: absolute;
+      right: 70px;
+      bottom: 50%;
+      transform: translateY(50%);
+      background: rgba(0,0,0,0.6);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .12s;
+      color: white;
+    }
+    .customize-btn:hover .label {
+      opacity: 1;
     }
     .customize-btn svg {
-      width: 24px;
-      height: 24px;
-      stroke: white;
-      fill: none;
-      stroke-width: 2;
+      width: 18px;
+      height: 18px;
+      fill: white;
+      stroke: none;
     }
     .modal {
       display: none;
@@ -209,9 +229,12 @@
   </div>
 
   <button class="customize-btn" id="customize-btn">
-    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 20h9"></path>
-      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+    <span class="label">背景設定</span>
+    <svg viewBox="0 0 200 200" width="18" height="18">
+      <g>
+        <path transform="rotate(5 97.29 110.112)" d="m162.60478,22.6297l-23.22623,-14.59836c-5.86005,-3.6796 -13.58169,-1.90861 -17.27413,3.95267l-9.15477,14.57112l44.43277,27.90726l9.16199,-14.56436c3.67843,-5.86826 1.92285,-13.59693 -3.93963,-17.26833l0,0zm-128.72341,129.81331l44.43519,27.90697l72.422,-115.29008l-44.45634,-27.91426l-72.40085,115.29736l0.00001,0.00001zm-6.78747,35.45684l-0.98141,26.21254l23.19061,-12.26627l21.55066,-11.3787l-42.86805,-26.93977l-0.89179,24.37222l0,0l-0.00001,-0.00001z" fill="white"/>
+        <rect transform="rotate(38 49.267 164.863)" height="18.05619" width="51.97301" y="155.83541" x="23.28018" fill="white"/>
+      </g>
     </svg>
   </button>
 
